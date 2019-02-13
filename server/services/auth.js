@@ -4,18 +4,21 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const User = mongoose.model('user');
 
+//------------------------- Session management by Object _id----------------------------------
+
 // Simply 'id' (tokenized) is compared to id in mongo
 // If it is same, the authentication is granted.
 
 // serializeUser for session
 // SerializeUser is used to provide some identifying token that can be saved
-// in the users session.  We traditionally use the 'ID' for this.
+// in the users session. We traditionally use the 'ID' for this.
 passport.serializeUser((user, done) => {
   // user is from the first login after signup. Please, find function signup below.
-  // Therefore, user is from mongodb that just saved the new user.
+  // Therefore, user is from mongodb that just saved the new user
+  //  in that eventually it uses id of document
   console.log('Where "user" is from?: ', user); 
   // 'id' is ObjectID from mongoDB.
-  // _id value is returned when save() in signup. Then, after login again,
+  // _id value is returned when save() in signup. Then, when the user automatically loggs in again,
   // the id is returned to be serialized.
   done(null, user.id);
 });
@@ -86,7 +89,9 @@ function signup({ email, password, req }) {
           // After login, return uers
           resolve(user);
         });
+        
       });
+
     });
 }
 

@@ -11,6 +11,7 @@ const RootQueryType = new GraphQLObjectType({
     user: { 
       type : UserType,
       resolve(parentValue, args, req) {
+        
         // req.user is populated from passport.js
         // no user has signed in => return value is null
 
@@ -25,7 +26,6 @@ const RootQueryType = new GraphQLObjectType({
         */
         return req.user;
       }
-    
     }
   }
 });

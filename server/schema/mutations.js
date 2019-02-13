@@ -83,68 +83,33 @@ const mutation = new GraphQLObjectType({
                 // without 'return', we do not know when 'AuthService.signup' runs
                 return AuthService.signup({ email, password, req });
             }
+            
+        },
+        logout: {
+            type: UserType,
+            resolve(parentValue, args, req) {
+
+                // req.user is automatically exposed from passport.js to node.
+                //      Hence, we do not need to difine the one.
+
+                // In this application, we weill get the current user first before logout.
+                //  because After logout, we can not get req.user
+                const { user } = req;
+                req.logout();
+                return user
+            }
+        },
+        login: {
+            type: UserType,
+            args: {
+                email: { type: GraphQLString },
+                password: { type: GraphQLString }
+            },
+            resolve(parentValue, { email, password }, req) {
+                return AuthService.login({ email, password, req });
+            }
         }
     }
 });
 
 module.exports = mutation;
-
-// const graphql = require('graphql');
-
-// const UserType = require('./types/user_type');
-// const AuthService = require('../services/auth');
-
-// const { 
-
-//     GraphQLObjectType,
-//     GraphQLString
-
-// } = graphql;
-
-// const mutation = new GraphQLObjectType({
-
-//     name: 'Muatation',
-//     fields: {
-//         signup: {
-//             type: UserType,
-//             args: {
-//                 email: { type: GraphQLString },
-//                 password: { type: GraphQLString }
-//             },
-
-//             // request from req of node
-//             // es6: {email, password }
-//             //resolve(parentValue, args, request) {
-//             resolve(parentValue, { email, password }, req) {
-//                 return AuthService.signup({email, password, req});
-//             }
-//         },
-//         logout: {
-//             type: UserType,
-//             resolve(parentValue, args, req) {
-
-//                 // passport.js automatically populates req.user!!! Please, keep in mind of this.
-//                 const { user } = req;
-
-//                 // Then logout method from passport.js
-//                 req.logout();
-
-//                 // return the user that logged out.
-//                 return user;
-//             }
-//         },
-//         login: {
-//             type: UserType,
-//             args: {
-//                 email: { type: GraphQLString },
-//                 password: { type: GraphQLString }
-//             },
-//             resolve(parentValue,  {email, password }, req) {
-//                 return AuthService.login({ email, password, req });
-//             }
-//         }
-//     }
-
-// });
-
-// module.exports = mutation;

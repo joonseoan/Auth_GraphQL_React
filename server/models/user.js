@@ -30,10 +30,14 @@ UserSchema.pre('save', function save(next) {
 // We need to compare the plain text password (submitted whenever logging in)
 // with the salted + hashed version that is sitting in the database.
 // 'bcrypt.compare' takes the plain text password and hashes it, then compares
-// that hashed password to the one stored in the DB.  Remember that hashing is
+// that hashed password to the one stored in the DB. ******** Remember that hashing is
 // a one way process - the passwords are never compared in plain text form.
 UserSchema.methods.comparePassword = function comparePassword(candidatePassword, cb) {
+
+  // this.password : new hashed password when the user logs in
+  // candidatePassword : hashed password from mongoDB
   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    // Invoke from bcrypt library
     cb(err, isMatch);
   });
 };
