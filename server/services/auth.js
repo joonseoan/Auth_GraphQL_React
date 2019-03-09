@@ -7,7 +7,7 @@ const User = mongoose.model('user');
 //------------------------- Session management by Object _id----------------------------------
 
 // Simply 'id' (tokenized) is compared to id in mongo
-// If it is same, the authentication is granted.
+// If they are same, the authentication is granted.
 
 // serializeUser for session
 // SerializeUser is used to provide some identifying token that can be saved
@@ -21,12 +21,14 @@ passport.serializeUser((user, done) => {
   // _id value is returned when save() in signup. Then, when the user automatically loggs in again,
   // the id is returned to be serialized.
   done(null, user.id);
+
 });
 
 // deserializeUser for mongo db
 // The counterpart of 'serializeUser'.  Given only a user's ID, we must return
 // the user object.  This object is placed on ***************'req.user'****************.
 passport.deserializeUser((id, done) => {
+  console.log('id at deserializeUser', id)
   User.findById(id, (err, user) => {
     done(err, user);
   });
@@ -45,11 +47,18 @@ passport.deserializeUser((id, done) => {
 // This string is provided back to the GraphQL client.
 passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
   User.findOne({ email: email.toLowerCase() }, (err, user) => {
+
+    console.log('user at LocalStrategy', user);
+
     if (err) { return done(err); }
     if (!user) { return done(null, false, 'Invalid Credentials'); }
     user.comparePassword(password, (err, isMatch) => {
       if (err) { return done(err); }
+
+      console.log('isMatch at LocalStrategy: ', isMatch);
+
       if (isMatch) {
+        console.log('user at comparePassword in LocalStrategy: ', user);
         return done(null, user);
       }
       return done(null, false, 'Invalid credentials.');
@@ -100,6 +109,36 @@ function signup({ email, password, req }) {
 // function returns a function, as its indended to be used as a middleware with
 // Express.  We have another compatibility layer here to make it work nicely with
 // GraphQL, as GraphQL always expects to see a promise for handling async code.
+
+/*
+  Authenticate
+  Authenticating requests is as simple as calling passport.authenticate() 
+  and specifying which strategy to employ. authenticate()'s function signature
+  is standard Connect middleware, 
+  which makes it convenient to use as route middleware in Express applications.
+
+  (Strategy is a local here)!
+
+  app.post('/login',
+    passport.authenticate('local'),
+    function(req, res) {
+      // If this function gets called, authentication was successful.
+      // `req.user` contains the authenticated user.
+      res.redirect('/users/' + req.user.username);
+    });
+
+  By default, if authentication fails, Passport will respond with a 401 Unauthorized status, 
+  and any additional route handlers will not be invoked. 
+  If authentication succeeds, the next handler will be invoked and the req.user property will be 
+  set to the authenticated user.
+
+Note: Strategies must be configured prior to using them in a route. Continue reading the chapter on configuration for details.
+
+*/
+
+// It can be replaced with express (/login);
+// custom callback of passport.authenticate() : (err, user => {})(req, res, next)
+//    At this function, req only is used. res and next are null.
 function login({ email, password, req }) {
   return new Promise((resolve, reject) => {
     passport.authenticate('local', (err, user) => {

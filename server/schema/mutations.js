@@ -50,37 +50,9 @@ const mutation = new GraphQLObjectType({
                 */
 
                // req: req of http/https
-                console.log('request: ', req); 
-                // return must be placed here because AuthService.signup was using promise.
-                // Like this to get a value
-                // reutrn function signup({ email, password, req }) {
-
-                    // const user = new User({ email, password });
-                    // if (!email || !password) { throw new Error('You must provide an email and password.'); }
-
-                    // return User.findOne({ email })
-                    //     // If a user already exists, generate an error and stop here
-                    //     .then(existingUser => {
-                    //     if (existingUser) { throw new Error('Email in use'); }
-                    //     // if the user does not exists, store the new user in mongoDB  
-                    //     return user.save();
-                    //     })
-                    //     // If the new user is stored,
-                    //     .then(user => {
-                    //     // By using promise,
-                    //     return new Promise((resolve, reject) => {
-                    //         // run login function in req
-                    //         req.logIn(user, (err) => {
-                    //         // If error occurs, stop here
-                    //         if (err) { reject(err); }
-                    //         // After login, return uers
-                    //         resolve(user);
-                    //         });
-                    //     });
-                    //     });
-                    // }
+                console.log('request: ', req);
                 
-                // without 'return', we do not know when 'AuthService.signup' runs
+                // without 'return', we can't get the result back to graphql from mongoDB.
                 return AuthService.signup({ email, password, req });
             }
             

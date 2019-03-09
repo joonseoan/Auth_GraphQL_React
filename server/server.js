@@ -24,6 +24,7 @@ mongoose.connection
     .once('open', () => console.log('Connected to MongoLab instance.'))
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
+// [ Cookie  => MongoDB]
 // Configures express to use sessions.  This places an encrypted identifier
 // on the users cookie.  When a user makes a request, this middleware examines
 // the cookie and modifies the request object to indicate which user made the request
@@ -40,14 +41,18 @@ app.use(session({
 }));
 
 // Passport is wired into express as a middleware. When a request comes in,
-// Passport will examine the request's session (as set by the above config) and
+// Passport will examine the request's cookie (as set by the above config) and
 // assign the current user to the ***************'req.user'************* object.  See also servces/auth.js
 
 //  When a request comes in,
-// Passport will examine the request's session (as set by the above config)
+// Passport will examine the request's cookie (as set by the above config)
 app.use(passport.initialize()); 
 
-// assign the current user to the ***************'req.user'************* object.  See also servces/auth.js
+// If Resquest's cookie in MongoDB is indentified with the exsisting session data in passport,
+//    it stores the session data
+// If the session data is not available, it also stores the new cookie data on passport session. 
+// Then, assign the current user to the ***************'req.user'************* object. Find also servces/auth.js
+// req.user => passport session
 app.use(passport.session());
 
 // Instruct Express to pass on any request made to the '/graphql' route

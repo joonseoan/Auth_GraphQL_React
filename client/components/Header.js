@@ -35,9 +35,9 @@ class Header extends Component {
 
         if(user) {
             return (<li>
-                        <a onClick={this.onLogoutClick.bind(this)}>
-                            Logout
-                        </a>
+                <a onClick={this.onLogoutClick.bind(this)}>
+                    Logout
+                </a>
             </li>);
 
         } else {
